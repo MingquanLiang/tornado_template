@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+0001_initial.py
+ksc_gc_resource.log
+000[23456789]*.py
+001[0123456789]*.py
+.idea/*.iml
+.idea/*.xml
+.idea/*
