@@ -1,0 +1,20 @@
+# when run in Product environment, Set DEBUG/DB_DEBUG as False
+DEBUG: True
+
+DB_SQL_LOGGING_ECHO: True
+
+DB_POOL_RECYCLE: 3600
+
+DATABASE:
+    DRIVER: "pymysql"
+    USER: "root"
+    PASSWORD: "123456"
+    HOST: "127.0.0.1"
+    PORT: 3306
+    NAME: "task_center"
+
+MONGODB:
+    host: "127.0.0.1"
+    port: 27017
+    db_name: "task_center"
+    collection: "operation"
