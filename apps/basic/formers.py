@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, Boolean, DateTime
-from conf import Session
+from conf import SessionContext
 
 import datetime
 
@@ -16,13 +16,43 @@ class BasicFormer(object):
         type_=DateTime, default=datetime.datetime.now(), onupdate=datetime.datetime.now, nullable=False, doc="更新时间"
     )
 
+    def serializer(self, skip_fields=None, extra_fields=None):
+        """
+        序列化对象
+        :param skip_fields:
+        :param extra_fields:
+        :return:
+        """
+        if not skip_fields:
+            skip_fields = []
+
+        if not extra_fields:
+            extra_fields = []
+
+        data = {}
+
+        for field in self.__class__.__table__.columns.keys():
+            if field in skip_fields:
+                continue
+
+            value = self.__getattribute__(field)
+
+            if isinstance(value, datetime.datetime):
+                value = value.strftime("%Y-%m-%d %H:%M:%S")
+            data[field] = value
+
+        for field in extra_fields:
+            data[field] = self.__getattribute__(field)
+
+        return data
+
     def update(self, **kwargs):
         """
         更新实例信息
         :param kwargs: 
         :return: 
         """
-        with Session() as session:
+        with SessionContext() as session:
             for field, field_value in kwargs.items():
                 setattr(self, field, field_value)
                 session.add(self)
@@ -33,9 +63,8 @@ class BasicFormer(object):
         保存实例
         :return: 
         """
-        with Session() as session:
+        with SessionContext() as session:
             session.add(self)
-            raise TypeError("hello world")
         return self
 
     def delete(self, _real_deleted=False):
@@ -44,7 +73,7 @@ class BasicFormer(object):
         :param _real_deleted: 
         :return: 
         """
-        with Session() as session:
+        with SessionContext() as session:
             if _real_deleted:
                 session.delete(self)
             else:

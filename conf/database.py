@@ -14,23 +14,26 @@ database_engine_instance = create_engine(
 
 # The sessionmaker factory should be used just once in
 # your application global scope, and treated like a configuration setting
-_SessionClass = scoped_session(
-    sessionmaker(
+
+SessionFactory = sessionmaker(
         bind=database_engine_instance,
         autoflush=False,
         expire_on_commit=False,
         autocommit=False,
     )
-)
+
+Session = SessionFactory
+
+_SessionScoped = scoped_session(SessionFactory)
 
 
-class Session(object):
+class SessionContext(object):
 
     def __init__(self):
         pass
 
     def __enter__(self):
-        self._session_instance = _SessionClass()
+        self._session_instance = _SessionScoped()
         return self._session_instance
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -41,11 +44,10 @@ class Session(object):
         :param exc_tb: 
         :return: 
         """
-        try:
-            if exc_tb:
-                raise exc_tb
-        finally:
+
+        if exc_tb:
             self._session_instance.close()
+            raise exc_tb
 
         try:
             self._session_instance.commit()
