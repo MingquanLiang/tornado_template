@@ -5,6 +5,7 @@ from conf import database_engine_instance
 
 
 def create_table():
+    print(">>>>>>>>")
     print("creating all table ...")
     DeclarativeBaseModel.metadata.create_all(database_engine_instance)
 
